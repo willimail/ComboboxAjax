@@ -2,36 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Testing
 {
     class Program
     {
-        static ThreadLocal<int> _field = new ThreadLocal<int>(() => 
-        {
-            return Thread.CurrentThread.ManagedThreadId;
-        });
+        
 
         static void Main(string[] args)
         {
-            new Thread(() =>
+            Task t = Task.Run(() =>
             {
-                for(int i =0; i<_field.Value; i++)
+                for(int i=0; i<10; i++)
                 {
-                    Console.WriteLine("Thread A: " + _field.Value);
-                    Thread.Sleep(500);
+                    Console.Write("*");
                 }
-            }).Start();
-
-            new Thread(() =>
-            {
-                for (int i = 0; i < _field.Value; i++)
-                {
-                    Console.WriteLine("Thread B: " + _field.Value);
-                    Thread.Sleep(500);
-                }
-            }).Start();
+            });
+            t.Wait();
 
             Console.Read();
 
