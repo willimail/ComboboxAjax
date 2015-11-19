@@ -8,24 +8,28 @@ namespace Testing
 {
     class Program
     {
-        [ThreadStatic]
-        static int _field;
+        static ThreadLocal<int> _field = new ThreadLocal<int>(() => 
+        {
+            return Thread.CurrentThread.ManagedThreadId;
+        });
 
         static void Main(string[] args)
         {
             new Thread(() =>
             {
-                for(int i =0; i<10; i++)
+                for(int i =0; i<_field.Value; i++)
                 {
-                    Console.WriteLine("Thread A: " + _field++);
+                    Console.WriteLine("Thread A: " + _field.Value);
+                    Thread.Sleep(500);
                 }
             }).Start();
 
             new Thread(() =>
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < _field.Value; i++)
                 {
-                    Console.WriteLine("Thread B: " + _field++);
+                    Console.WriteLine("Thread B: " + _field.Value);
+                    Thread.Sleep(500);
                 }
             }).Start();
 
